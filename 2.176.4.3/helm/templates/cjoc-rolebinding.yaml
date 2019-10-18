@@ -1,0 +1,23 @@
+{{- if .Values.OperationsCenter.Enabled -}}
+{{- if .Values.rbac.install -}}
+apiVersion: {{ template "rbac.apiVersion" . }}
+kind: RoleBinding
+metadata:
+  name: cjoc-role-binding
+  labels:
+    app: cjoc
+    chart: "{{ .Chart.Name }}-{{ .Chart.Version }}"
+    release: "{{ .Release.Name }}"
+    heritage: "{{ .Release.Service }}"
+roleRef:
+  apiGroup: {{ template "rbac.apiGroup" . }}
+  kind: Role
+  name: cjoc-master-management
+{{- if  (eq .Values.OperationsCenter.Platform "openshift") }}
+  namespace: {{.Values.OperationsCenter.Project.name}}
+{{- end }}
+subjects:
+- kind: ServiceAccount
+  name: cjoc
+{{- end -}}
+{{- end -}}

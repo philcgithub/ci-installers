@@ -1,0 +1,23 @@
+{{- if .Values.Master.Enabled -}}
+{{- if .Values.rbac.install -}}
+kind: Role
+apiVersion: {{ template "rbac.apiVersion" . }}
+metadata:
+  name: cjoc-agents
+  labels:
+    app: cjoc
+    heritage: {{.Release.Service | quote }}
+    release: {{.Release.Name | quote }}
+    chart: "{{.Chart.Name}}-{{.Chart.Version}}"
+rules:
+- apiGroups: [""]
+  resources: ["pods"]
+  verbs: ["create","delete","get","list","patch","update","watch"]
+- apiGroups: [""]
+  resources: ["pods/exec"]
+  verbs: ["create","delete","get","list","patch","update","watch"]
+- apiGroups: [""]
+  resources: ["pods/log"]
+  verbs: ["get","list","watch"]
+{{- end -}}
+{{- end -}}

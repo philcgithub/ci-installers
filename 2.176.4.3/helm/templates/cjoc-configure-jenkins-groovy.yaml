@@ -1,0 +1,15 @@
+{{- if .Values.OperationsCenter.Enabled -}}
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: cjoc-configure-jenkins-groovy
+  labels:
+    app: cjoc
+    chart: "{{ .Chart.Name }}-{{ .Chart.Version }}"
+    release: "{{ .Release.Name }}"
+    heritage: "{{ .Release.Service }}"
+data:
+  location.groovy: |
+    hudson.ExtensionList.lookupSingleton(com.cloudbees.jenkins.support.impl.cloudbees.TcpSlaveAgentListenerMonitor.class).disable(true)
+    jenkins.model.JenkinsLocationConfiguration.get().setUrl("{{- template "oc.url" . -}}")
+{{- end -}}

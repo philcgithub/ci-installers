@@ -1,0 +1,36 @@
+# A helm example values file for standard kubernetes install.
+# An nginx-ingress controller is not installed and ssl isn't installed.
+# Install an nginx-ingress controller
+ nginx-ingress:
+   Enabled: true
+   tcp:
+     50000: "cloudbees-core/cjoc:50000:PROXY"
+   controller:
+     config:
+       use-proxy-protocol: "true"
+     service:
+       annotations:
+         service.beta.kubernetes.io/aws-load-balancer-proxy-protocol: '*'
+
+ OperationsCenter:
+   # Set the platform to aws, so that ELBs are created
+   platform: 'aws'
+   # Set the HostName for the Operation Center
+   HostName: 'a9bd9517b0ba611ea9b400ebfaccd51b-582144850.us-east-1.elb.amazonaws.com'
+   # Setting ServiceType to ClusterIP creates ingress
+   ServiceType: ClusterIP
+   
+   Image:
+     dockerImageTag: 2.176.1.4
+   Ingress:
+     tls:
+     ## Set this to true in order to enable TLS on the ingress record
+       Enable: false
+       # Create a certificate kubernetes and use it here.
+       SecretName: core-example-com-tls
+       Host: jenkins.cluster.local
+
+       # The following setting was ignored
+Master:
+   Image:
+     dockerImageTag: 2.176.1.4

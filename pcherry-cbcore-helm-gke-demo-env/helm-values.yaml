@@ -1,0 +1,14 @@
+# A helm example values file for standard kubernetes install.
+# An nginx-ingress controller is not installed and ssl isn't installed.
+# Install an nginx-ingress controller
+ nginx-ingress:
+   Enabled: true
+ OperationsCenter:
+   # Set the HostName for the Operation Center
+   HostName: 'jenkins.35.189.197.128.xip.io'
+   # Setting ServiceType to ClusterIP creates ingress
+   ServiceType: ClusterIP
+   Ingress:
+     tls:
+     ## Set this to true in order to enable TLS on the ingress record
+       Enable: false

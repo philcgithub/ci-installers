@@ -1,5 +1,3 @@
-# A helm example values file for standard kubernetes install.
-# An nginx-ingress controller is not installed and ssl isn't installed.
 # Install an nginx-ingress controller
  nginx-ingress:
    Enabled: true
@@ -10,16 +8,22 @@
    # Set the HostName for the Operation Center
    HostName: 'core-gke.pcherry.uk'
    Image:
-     dockerImage: cloudbees/cloudbees-cloud-core-oc:2.190.2.2
+     dockerImage: cloudbees/cloudbees-cloud-core-oc:2.235.2.3
    # Setting ServiceType to ClusterIP creates ingress
    ServiceType: ClusterIP
    Ingress:
      tls:
      ## Set this to true in order to enable TLS on the ingress record
-       Enable: false
+       Enable: true
+       Host: core-gke.pcherry.uk
+       SecretName: cbci-priv-key-letsencrypt
+     Annotations:
+       cert-manager.io/cluster-issuer: letsencrypt-core-gke-pcherry-uk
 
  Master:
    Image:
-     dockerImage: cloudbees/cloudbees-core-mm:2.190.2.2
+     dockerImage: cloudbees/cloudbees-core-mm:2.235.2.3
      dockerPullPolicy: Always
-     longName: CloudBees Core - Managed Master - 2.190.2.2
+     longName: CloudBees Core - Managed Master - 2.235.2.3
+ Persistence:
+   ExistingClaim: 'jenkins-home-cjoc-0'

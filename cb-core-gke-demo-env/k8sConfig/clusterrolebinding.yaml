@@ -1,0 +1,23 @@
+apiVersion: rbac.authorization.k8s.io/v1beta1
+kind: ClusterRole
+metadata:
+  name: master-management-cloudbees-core
+rules:
+- apiGroups: ["storage.k8s.io"]
+  resources: ["storageclasses"]
+  verbs: ["get","list"]
+
+---
+apiVersion: rbac.authorization.k8s.io/v1beta1
+kind: ClusterRoleBinding
+metadata:
+  name: cjoc-cloudbees-core
+roleRef:
+  apiGroup: rbac.authorization.k8s.io
+  kind: ClusterRole
+  name: master-management-cloudbees-core
+subjects:
+- kind: ServiceAccount
+  name: cjoc
+  namespace: cloudbees-core
+

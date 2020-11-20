@@ -1,0 +1,6 @@
+spec:
+  ports:
+  - name: 50001-tcp
+    port: 50001
+    protocol: TCP
+    targetPort: 50001-tcp

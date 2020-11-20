@@ -1,0 +1,9 @@
+spec:
+  template:
+    spec:
+      containers:
+        - name: nginx-ingress-controller
+          ports:
+          - containerPort: 50001
+            name: 50001-tcp
+            protocol: TCP

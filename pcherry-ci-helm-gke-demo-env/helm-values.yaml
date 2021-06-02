@@ -1,0 +1,27 @@
+# Install an nginx-ingress controller
+ nginx-ingress:
+   Enabled: true
+
+ OperationsCenter:
+   # Set the HostName for the Operation Center
+   HostName: 'ci-gke.pcherry.uk'
+   Image:
+     dockerImage: cloudbees/cloudbees-cloud-core-oc:2.277.4.3
+   # Setting ServiceType to ClusterIP creates ingress
+   ServiceType: ClusterIP
+   Ingress:
+     tls:
+     ## Set this to true in order to enable TLS on the ingress record
+       Enable: true
+       Host: ci-gke.pcherry.uk
+       SecretName: cbci-priv-key-letsencrypt
+     Annotations:
+       cert-manager.io/cluster-issuer: letsencrypt-ci-gke-pcherry-uk
+
+ Master:
+   Image:
+     dockerImage: cloudbees/cloudbees-core-mm:2.277.4.3
+     dockerPullPolicy: Always
+     longName: CloudBees Core - Managed Master - 2.277.4.3
+ #Persistence:
+   #ExistingClaim: 'jenkins-home-cjoc-0'

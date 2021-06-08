@@ -8,33 +8,42 @@ environments:
 repositories:
 - name: cloudbees
   url: https://charts.cloudbees.com/public/cloudbees
+- name: jetstack
+  url: https://charts.jetstack.io
 
 releases:
+- name: cert-manager
+  namespace: cert-manager
+  chart: jetstack/cert-manager
+  version: 1.3.1
+  values:
+  - installCRDs: true
+
 - name: cloudbees-core
   namespace: cloudbees-ci
   chart: cloudbees/cloudbees-core
   values:
-    - nginx-ingress:
-        Enabled: true
-    - OperationsCenter:
-        # Set the HostName for the Operation Center
-        HostName: "{{  .Values.hostname }}"
-        Image:
-          dockerImage: "cloudbees/cloudbees-cloud-core-oc:{{ .Values.version }}"
-        # Setting ServiceType to ClusterIP creates ingress
-        ServiceType: ClusterIP
-        Ingress:
-          tls:
-          ## Set this to true in order to enable TLS on the ingress record
-            Enable: true
-            Host: "{{  .Values.hostname }}"
-            SecretName: cbci-priv-key-letsencrypt
-          Annotations:
-            cert-manager.io/cluster-issuer: letsencrypt-{{ .Values.hostname | replace "." "-" }}
-    - Hibernation:
-        Enabled: true
-    - Master:
-        Image:
-          dockerImage: "cloudbees/cloudbees-core-mm:{{ .Values.version }}"
-          dockerPullPolicy: Always
-          longName: "CloudBees CI - Managed Controller - {{ .Values.version }}"
+  - nginx-ingress:
+      Enabled: true
+  - OperationsCenter:
+      # Set the HostName for the Operation Center
+      HostName: "{{  .Values.hostname }}"
+      Image:
+        dockerImage: "cloudbees/cloudbees-cloud-core-oc:{{ .Values.version }}"
+      # Setting ServiceType to ClusterIP creates ingress
+      ServiceType: ClusterIP
+      Ingress:
+        tls:
+        ## Set this to true in order to enable TLS on the ingress record
+          Enable: true
+          Host: "{{  .Values.hostname }}"
+          SecretName: cbci-priv-key-letsencrypt
+        Annotations:
+          cert-manager.io/cluster-issuer: letsencrypt-{{ .Values.hostname | replace "." "-" }}
+  - Hibernation:
+      Enabled: true
+  - Master:
+      Image:
+        dockerImage: "cloudbees/cloudbees-core-mm:{{ .Values.version }}"
+        dockerPullPolicy: Always
+        longName: "CloudBees CI - Managed Controller - {{ .Values.version }}"

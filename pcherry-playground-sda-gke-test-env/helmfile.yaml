@@ -1,0 +1,73 @@
+# helmfile --environment ci-gke.pcherry.uk write-values
+environments:
+  pcherry-playground:
+    values:
+      - hostname: "sda-gke.pcherry.uk"
+      - civersion: "2.289.1.2"
+
+repositories:
+- name: cloudbees
+  url: https://charts.cloudbees.com/public/cloudbees
+
+releases:
+- name: cloudbees-sda
+  namespace: cloudbees-sda
+  chart: cloudbees/cloudbees-sda
+  values:
+  - cd:
+      images:
+        tag: "10.2.0.148735_2.1.22_20210527"
+      servername: "{{ .Values.hostname }}"
+      ingress:
+        host: "{{ .Values.hostname }}"
+      clusteredMode: false
+      storage:
+        volumes:
+          serverPlugins:
+            accessMode: ReadWriteOnce
+            storageClass: null
+            storage: 5Gi
+          repositoryStorage:
+            storage: 10Gi
+      server:
+        resources:
+          limits:
+            cpu: 1.5
+            memory: 4Gi
+          requests:
+            cpu: 0.5
+            memory: 4Gi
+      mariadb:
+        enabled:  true
+        db:
+          user: "flow"
+      database:
+        dbName: "demo"
+        dbUser: "flow"
+        dbType: "mariadb"
+        dbPort: 3306
+        clusterEndpoint: "mariadb"
+      flowCredentials:
+        adminPassword: admin123
+  - ci:
+      nginx-ingress:
+        Enabled: true
+      OperationsCenter:
+        HostName: "{{  .Values.hostname }}"
+        Image:
+          dockerImage: "cloudbees/cloudbees-cloud-core-oc:{{ .Values.civersion }}"
+        ServiceType: ClusterIP
+        Ingress:
+          tls:
+            Enable: true
+            Host: "{{  .Values.hostname }}"
+            SecretName: cbci-priv-key-letsencrypt
+          Annotations:
+            cert-manager.io/cluster-issuer: letsencrypt-{{ .Values.hostname | replace "." "-" }}
+      Hibernation:
+        Enabled: true
+      Master:
+        Image:
+          dockerImage: "cloudbees/cloudbees-core-mm:{{ .Values.civersion }}"
+          dockerPullPolicy: Always
+          longName: "CloudBees CI - Managed Controller - {{ .Values.civersion }}"

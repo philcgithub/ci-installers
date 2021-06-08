@@ -1,0 +1,40 @@
+# helmfile --environment ci-gke.pcherry.uk write-values
+environments:
+  ci-gke.pcherry.uk:
+    values:
+      - hostname: "ci-gke.pcherry.uk"
+      - version: "2.289.1.2"
+
+repositories:
+- name: cloudbees
+  url: https://charts.cloudbees.com/public/cloudbees
+
+releases:
+- name: cloudbees-core
+  namespace: cloudbees-ci
+  chart: cloudbees/cloudbees-core
+  values:
+    - nginx-ingress:
+        Enabled: true
+    - OperationsCenter:
+        # Set the HostName for the Operation Center
+        HostName: "{{  .Values.hostname }}"
+        Image:
+          dockerImage: "cloudbees/cloudbees-cloud-core-oc:{{ .Values.version }}"
+        # Setting ServiceType to ClusterIP creates ingress
+        ServiceType: ClusterIP
+        Ingress:
+          tls:
+          ## Set this to true in order to enable TLS on the ingress record
+            Enable: true
+            Host: "{{  .Values.hostname }}"
+            SecretName: cbci-priv-key-letsencrypt
+          Annotations:
+            cert-manager.io/cluster-issuer: letsencrypt-{{ .Values.hostname | replace "." "-" }}
+    - Hibernation:
+        Enabled: true
+    - Master:
+        Image:
+          dockerImage: "cloudbees/cloudbees-core-mm:{{ .Values.version }}"
+          dockerPullPolicy: Always
+          longName: "CloudBees CI - Managed Controller - {{ .Values.version }}"

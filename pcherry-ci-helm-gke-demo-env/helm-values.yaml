@@ -1,3 +1,4 @@
+# helm install -f helm-values.yaml cloudbees-core cloudbees/cloudbees-core --namespace=cloudbees-ci
 # Install an nginx-ingress controller
  nginx-ingress:
    Enabled: true
@@ -6,7 +7,7 @@
    # Set the HostName for the Operation Center
    HostName: 'ci-gke.pcherry.uk'
    Image:
-     dockerImage: cloudbees/cloudbees-cloud-core-oc:2.277.4.3
+     dockerImage: cloudbees/cloudbees-cloud-core-oc:2.289.1.2
    # Setting ServiceType to ClusterIP creates ingress
    ServiceType: ClusterIP
    Ingress:
@@ -18,10 +19,13 @@
      Annotations:
        cert-manager.io/cluster-issuer: letsencrypt-ci-gke-pcherry-uk
 
+ Hibernation:
+   Enabled: true
+
  Master:
    Image:
-     dockerImage: cloudbees/cloudbees-core-mm:2.277.4.3
+     dockerImage: cloudbees/cloudbees-core-mm:2.289.1.2
      dockerPullPolicy: Always
-     longName: CloudBees Core - Managed Master - 2.277.4.3
+     longName: CloudBees Core - Managed Master - 2.289.1.2
  #Persistence:
    #ExistingClaim: 'jenkins-home-cjoc-0'

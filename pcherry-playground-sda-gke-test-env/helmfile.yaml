@@ -1,4 +1,4 @@
-# helmfile --environment ci-gke.pcherry.uk write-values
+# helmfile --environment sda-gke.pcherry.uk write-values
 environments:
   pcherry-playground:
     values:
@@ -21,22 +21,6 @@ releases:
       ingress:
         host: "{{ .Values.hostname }}"
       clusteredMode: false
-      storage:
-        volumes:
-          serverPlugins:
-            accessMode: ReadWriteOnce
-            storageClass: null
-            storage: 5Gi
-          repositoryStorage:
-            storage: 10Gi
-      server:
-        resources:
-          limits:
-            cpu: 1.5
-            memory: 4Gi
-          requests:
-            cpu: 0.5
-            memory: 4Gi
       mariadb:
         enabled:  true
         db:
@@ -57,13 +41,6 @@ releases:
         Image:
           dockerImage: "cloudbees/cloudbees-cloud-core-oc:{{ .Values.civersion }}"
         ServiceType: ClusterIP
-        Ingress:
-          tls:
-            Enable: true
-            Host: "{{  .Values.hostname }}"
-            SecretName: cbci-priv-key-letsencrypt
-          Annotations:
-            cert-manager.io/cluster-issuer: letsencrypt-{{ .Values.hostname | replace "." "-" }}
       Hibernation:
         Enabled: true
       Master:
